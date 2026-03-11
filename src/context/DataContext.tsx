@@ -118,10 +118,32 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
                             return { ...t, TeamID: normalizedId };
                         });
 
+                        // Deep normalization for all entities that use TeamIDs
+                        const normalizedProjects = (data.projects || []).map((p: any) => ({
+                            ...p,
+                            LeadSalesTeamID: normalizeTeamId(p.LeadSalesTeamID)
+                        }));
+                        const normalizedMmAllocations = (data.mmAllocations || []).map((m: any) => ({
+                            ...m,
+                            TeamID: normalizeTeamId(m.TeamID)
+                        }));
+                        const normalizedArCollections = (data.arCollections || []).map((c: any) => ({
+                            ...c,
+                            // If there were any TeamID in collections, normalize here. 
+                            // Usually linked via ProjectID, but good for future-proofing.
+                        }));
+                        const normalizedCostExpenses = (data.costExpenses || []).map((e: any) => ({
+                            ...e,
+                            TeamID: normalizeTeamId(e.TeamID)
+                        }));
+
                         setState(prev => ({
                             ...prev,
                             ...data,
-                            teams: teams,
+                            teams,
+                            projects: normalizedProjects,
+                            mmAllocations: normalizedMmAllocations,
+                            costExpenses: normalizedCostExpenses,
                             users: data.users || []
                         }));
                     }
