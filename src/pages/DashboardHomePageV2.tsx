@@ -107,7 +107,7 @@ export default function DashboardHomePageV2() {
     const isExpenseProject = (p: any, teamId: string) => {
         const leadId = normalizeTeamId(p.LeadSalesTeamID);
         const tid = normalizeTeamId(teamId);
-        return leadId === tid; // Strict match: if you lead it, it's your expense.
+        return leadId === tid && tid !== ''; // Strict match: if you lead it, it's your expense.
     };
 
     // Helper: Is the team the LEAD (Managed)? 
@@ -182,7 +182,11 @@ export default function DashboardHomePageV2() {
                         if (!p) return false;
                         return isExpenseProject(p, targetTeamId);
                     })
-                    .reduce((sum, c) => sum + Number(c.AmountKRW) + Number(c.TaxAmountKRW || 0), 0);
+                    .reduce((sum, c) => {
+                        const amt = Number(String(c.AmountKRW || 0).replace(/,/g, '')) || 0;
+                        const tax = Number(String(c.TaxAmountKRW || 0).replace(/,/g, '')) || 0;
+                        return sum + amt + tax;
+                    }, 0);
 
                 const relevantMM = mmAllocations.filter(m => m.MonthKey === monthKey);
 
@@ -219,8 +223,8 @@ export default function DashboardHomePageV2() {
                         return p && isManagedProject(p, targetTeamId);
                     });
 
-                const outsource = teamExpenses.reduce((sum, e) => sum + Number(e.OutsourceCostKRW || 0), 0);
-                const other = teamExpenses.reduce((sum, e) => sum + Number(e.ExpenseCostKRW || 0), 0);
+                const outsource = teamExpenses.reduce((sum, e) => sum + (Number(String(e.OutsourceCostKRW || 0).replace(/,/g, '')) || 0), 0);
+                const other = teamExpenses.reduce((sum, e) => sum + (Number(String(e.ExpenseCostKRW || 0).replace(/,/g, '')) || 0), 0);
 
                 // DETAILED REGROUPING (NET LABOR + FULL RESTORE): 
                 // Revenue Grouping: Total Revenue for the card's header now only reflects Cash Collection
@@ -298,10 +302,13 @@ export default function DashboardHomePageV2() {
             let monthlyCollection = 0;
             let monthlyProfit = 0;
 
-            // REVISED TOTAL LOGIC:
             // Revenue = Sum of ALL Collections (strictly matching user request for "Collection only")
             const monthlyCollections = arCollections.filter(c => c.MonthKey === monthKey);
-            const collectionRevenue = monthlyCollections.reduce((sum, c) => sum + Number(c.AmountKRW) + Number(c.TaxAmountKRW || 0), 0);
+            const collectionRevenue = monthlyCollections.reduce((sum, c) => {
+                const amt = Number(String(c.AmountKRW || 0).replace(/,/g, '')) || 0;
+                const tax = Number(String(c.TaxAmountKRW || 0).replace(/,/g, '')) || 0;
+                return sum + amt + tax;
+            }, 0);
 
             monthlyRevenue = collectionRevenue;
             monthlyCollection = collectionRevenue;
@@ -364,13 +371,12 @@ export default function DashboardHomePageV2() {
 
             const revenue = collections;
 
-            // 1. Manual Expenses (CostExpenses table)
             const manualCosts = costExpenses
                 .filter(e => e.ProjectID === p.ProjectID && e.MonthKey >= startMonth && e.MonthKey <= endMonth)
                 .reduce((sum, e) => {
-                    const labor = Number(e.LaborCostKRW || 0);
-                    const outsource = Number(e.OutsourceCostKRW || 0);          // All Outsource
-                    const other = Number(e.ExpenseCostKRW || 0);                // All Other
+                    const labor = Number(String(e.LaborCostKRW || 0).replace(/,/g, '')) || 0;
+                    const outsource = Number(String(e.OutsourceCostKRW || 0).replace(/,/g, '')) || 0;
+                    const other = Number(String(e.ExpenseCostKRW || 0).replace(/,/g, '')) || 0;
                     return sum + labor + outsource + other;
                 }, 0);
 
@@ -407,7 +413,11 @@ export default function DashboardHomePageV2() {
                     const p = projects.find(op => op.ProjectID === c.ProjectID);
                     return p && isExpenseProject(p, team.TeamID);
                 })
-                .reduce((sum, c) => sum + Number(c.AmountKRW) + Number(c.TaxAmountKRW || 0), 0);
+                .reduce((sum, c) => {
+                    const amt = Number(String(c.AmountKRW || 0).replace(/,/g, '')) || 0;
+                    const tax = Number(String(c.TaxAmountKRW || 0).replace(/,/g, '')) || 0;
+                    return sum + amt + tax;
+                }, 0);
 
             // 2. Resource & Support Logic (Matches Input Page Footer)
             const relevantMM = mmAllocations.filter(m => m.MonthKey >= startMonth && m.MonthKey <= endMonth);
@@ -445,14 +455,14 @@ export default function DashboardHomePageV2() {
                     const p = projects.find(proj => proj.ProjectID === e.ProjectID);
                     return p && isManagedProject(p, team.TeamID);
                 })
-                .reduce((sum, e) => sum + Number(e.OutsourceCostKRW || 0), 0);
+                .reduce((sum, e) => sum + (Number(String(e.OutsourceCostKRW || 0).replace(/,/g, '')) || 0), 0);
 
             const other = relevantExpenses
                 .filter(e => {
                     const p = projects.find(proj => proj.ProjectID === e.ProjectID);
                     return p && isManagedProject(p, team.TeamID);
                 })
-                .reduce((sum, e) => sum + Number(e.ExpenseCostKRW || 0), 0);
+                .reduce((sum, e) => sum + (Number(String(e.ExpenseCostKRW || 0).replace(/,/g, '')) || 0), 0);
 
             // DETAILED REGROUPING (NET LABOR + FULL RESTORE):
             // totalRevenue = External Collections only (Support is accounted for in ownLabor)
@@ -494,7 +504,12 @@ export default function DashboardHomePageV2() {
             const leadId = normalizeTeamId(p?.LeadSalesTeamID);
             return (leadId === 'TEAM_COMMON' || (p?.ProjectName?.includes('철도2부') && p?.ProjectName?.includes('공통'))) &&
                 e.MonthKey >= startMonth && e.MonthKey <= endMonth;
-        }).reduce((sum, e) => sum + Number(e.LaborCostKRW || 0) + Number(e.OutsourceCostKRW || 0) + Number(e.ExpenseCostKRW || 0), 0);
+        }).reduce((sum, e) => {
+            const labor = Number(String(e.LaborCostKRW || 0).replace(/,/g, '')) || 0;
+            const outsource = Number(String(e.OutsourceCostKRW || 0).replace(/,/g, '')) || 0;
+            const other = Number(String(e.ExpenseCostKRW || 0).replace(/,/g, '')) || 0;
+            return sum + labor + outsource + other;
+        }, 0);
 
         const teamExpenseSum = teamSummaryData.reduce((sum, team) => {
             // Net Divisional Expense = Sum of each team's actual payroll + external costs
