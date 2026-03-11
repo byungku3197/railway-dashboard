@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R2-MAP 사용자 매뉴얼</title>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+        body {
+            font-family: 'Pretendard', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #004442;
+            font-size: 28px;
+            border-bottom: 2px solid #004442;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            color: #004442;
+            font-size: 22px;
+            margin-top: 40px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        h3 {
+            color: #2c3e50;
+            font-size: 18px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        h4 {
+            color: #555;
+            font-size: 16px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 15px;
+        }
+
+        ul,
+        ol {
+            margin-bottom: 15px;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            color: #004442;
+            font-weight: bold;
+            text-align: left;
+            padding: 12px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        code {
+            background-color: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #c92a2a;
+        }
+
+        .highlight {
+            background-color: #e6fcf5;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #004442;
+            margin: 20px 0;
+        }
+
+        .box {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #fafafa;
+            margin: 20px 0;
+        }
+
+        .faq-q {
+            font-weight: bold;
+            color: #004442;
+            margin-top: 20px;
+        }
+
+        .faq-a {
+            margin-left: 20px;
+            color: #555;
+        }
+
+        @media print {
+            body {
+                max-width: 100%;
+                padding: 0;
+            }
+
+            h1 {
+                page-break-before: always;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>R2-MAP (철도2부 운영 관리 플랫폼) 상세 사용자 매뉴얼</h1>
+
+    <p>본 매뉴얼은 <strong>철도2부</strong>의 효율적인 부서 운영 및 성과 관리를 위해 제작된 <strong>R2-MAP (Rail 2 Management Analysis
+            Platform)</strong>의 상세 사용법을 안내합니다.</p>
+    <p>시스템은 사용자의 <strong>권한(Role)</strong>에 따라 기능이 차별화되어 있으며, 본 가이드는 <strong>부서장(관리자)</strong>과 <strong>팀장</strong>을 위한
+        핵심 기능을 중점적으로 다룹니다.</p>
+
+    <div class="box">
+        <strong>💡 R2-MAP 접속 정보</strong><br>
+        접속 주소: <i>(배포 URL 입력)</i><br>
+        초기 공용 비밀번호: <i>(관리자 문의)</i>
+    </div>
+
+    <h2>🏗️ 1. 시작하기 (공통)</h2>
+
+    <h3>1.1 접속 및 로그인</h3>
+    <ol>
+        <li><strong>접속</strong>: 배포된 웹 주소로 접속합니다.</li>
+        <li><strong>Global Gateway (1차 보안)</strong>:
+            <ul>
+                <li>초기 화면에서 부서 공용 비밀번호(<code>Access Password</code>)를 입력해야 합니다.</li>
+            </ul>
+        </li>
+        <li><strong>로그인/회원가입</strong>:
+            <ul>
+                <li>우측 상단 <strong>'Admin Login'</strong> 버튼 또는 사람 아이콘을 클릭합니다.</li>
+                <li><strong>팀장</strong>: 최초 1회 회원가입(<code>Sign Up</code>)을 진행합니다. 아이디, 비밀번호, 본인 팀을 선택 후 가입 요청을 보냅니다.
+                    (부서장 승인 후 로그인 가능)</li>
+                <li><strong>부서장</strong>: 부여된 관리자 계정으로 로그인합니다.</li>
+            </ul>
+        </li>
+    </ol>
+
+    <h2>👑 2. 부서장 (Division Head) 가이드</h2>
+    <p><strong>핵심 권한</strong>: 부서 전체 데이터 수정, 연간 목표 설정, 사용자 승인, 월 마감 관리.</p>
+
+    <h3>2.1 연간 목표 설정 (Annual Goal Setting) 🎯</h3>
+    <p>부서 전체의 1년 농사를 계획하는 기능입니다.</p>
+    <ol>
+        <li><strong>대시보드 접속</strong>: 메인 화면(<code>Total</code> 탭)으로 진입합니다.</li>
+        <li><strong>목표 수정</strong>: 화면 우측 상단 박스(KP Box)에 있는 <strong>'연필 아이콘(✏️)'</strong>을 클릭합니다.</li>
+        <li><strong>목표 입력</strong>: 팝업창에서 올해의 <strong>수주 목표(Contract Goal)</strong>와 <strong>수금 목표(Collection
+                Goal)</strong> 금액을 입력합니다.</li>
+        <li><strong>저장</strong>: <code>Save Changes</code>를 누르면 즉시 대시보드 그래프와 달성률(%)에 반영됩니다.</li>
+    </ol>
+
+    <h3>2.2 부서원 및 팀 관리 (User Management) 👥</h3>
+    <p>새로 부임한 팀장의 계정을 승인하거나 권한을 조정합니다.</p>
+    <ol>
+        <li>작은 메뉴바의 <strong>Settings (설정)</strong> 메뉴로 이동합니다.</li>
+        <li><strong>Pending Users (승인 대기)</strong> 목록에서 가입 요청한 팀장을 확인하고 <code>Approve</code>를 눌러 승인합니다.</li>
+        <li><strong>Active Users</strong>: 기존 사용자의 팀 변경(인사 이동 시)이나 권한 등급(<code>LEADER</code> ↔ <code>SUB_ADMIN</code>)을
+            변경할 수 있습니다.</li>
+        <li><strong>Global Password</strong>: 대시보드 접속용 공용 비밀번호를 주기적으로 변경하여 보안을 강화할 수 있습니다.</li>
+    </ol>
+
+    <h3>2.3 월별 마감 관리 (Closing Control) 🔒</h3>
+    <p>매월 실적 집계가 끝난 후, 데이터가 변조되지 않도록 잠그는 기능입니다.</p>
+    <ol>
+        <li>좌측 메뉴의 <strong>Closing (마감 관리)</strong> 메뉴로 이동합니다.</li>
+        <li>각 팀별/월별 마감 상태 리스트가 보입니다.</li>
+        <li><strong>자물쇠 아이콘</strong>을 클릭하여 상태를 변경합니다.
+            <ul>
+                <li>🟢 <code>OPEN</code>: 데이터 입력/수정 가능 상태.</li>
+                <li>🔴 <code>CLOSED</code>: 데이터 수정 불가 (읽기 전용).</li>
+            </ul>
+        </li>
+    </ol>
+
+    <div class="highlight">
+        Tip: 특정 팀이 뒤늦게 수정이 필요하다고 하면, 잠시 해당 월만 OPEN으로 풀어주시면 됩니다.
+    </div>
+
+    <h3>2.4 데이터 정정 (Data Correction) 🛠️</h3>
+    <p>팀장이 실수로 잘못 입력했거나 삭제하지 못하는 데이터가 있다면 직접 수정할 수 있습니다.</p>
+    <ol>
+        <li>메인 화면 탭에서 해당 팀(예: Team 3)을 선택하거나, <code>Input Dashboard</code>로 진입합니다.</li>
+        <li>관리자 권한으로 접속 시, <strong>모든 입력 필드가 활성화</strong>되어 있고 리스트에 <strong>삭제(🗑️) 버튼</strong>이 보입니다.</li>
+        <li>원하는 대로 데이터를 수정하거나 삭제하여 정합성을 맞춰줍니다.</li>
+    </ol>
+
+    <h2>🧢 3. 팀장 (Team Leader) 가이드</h2>
+    <p><strong>핵심 권한</strong>: 본인 팀 데이터의 입력, 수정, 관리. (타 팀 데이터는 조회만 가능)</p>
+
+    <h3>3.1 실적 및 비용 입력 (Input Dashboard) 📝</h3>
+    <p>좌측 사이드바에서 본인 팀 이름(예: <code>Input: TEAM 1</code>)을 클릭하여 입력 페이지로 이동합니다.</p>
+
+    <h4>A. 탭 1: CONTRACT (수주 계약)</h4>
+    <p>새로운 프로젝트를 수주했을 때 입력합니다.</p>
+    <ul>
+        <li><strong>Project ID</strong>: 도화 엔지니어링 프로젝트 코드를 입력합니다.</li>
+        <li><strong>Project Name</strong>: 프로젝트명을 입력합니다.</li>
+        <li><strong>Amount</strong>: 계약금액(VAT 별도)을 원화(KRW)로 입력합니다.</li>
+        <li><strong>기간</strong>: 프로젝트 시작/종료 월을 설정합니다.</li>
+    </ul>
+
+    <h4>B. 탭 2: COLLECTION (수금 및 매출) 💰</h4>
+    <ol>
+        <li>상단에서 <strong>대상 월(Month)</strong>과 <strong>프로젝트</strong>를 선택합니다.</li>
+        <li><strong>Supply / VAT</strong>: 세금계산서 발행 기준 공급가액과 부가세를 입력합니다.</li>
+        <li><strong>M/M Allocation (인력 투입)</strong>:
+            <ul>
+                <li>해당 프로젝트에 투입된 직급별 M/M를 입력합니다.</li>
+                <li><strong>자동 계산</strong>: 입력된 M/M은 설정된 단가(Billing Rate)에 맞춰 자동으로 금액으로 환산됩니다.</li>
+                <li><strong>영업팀(1,2팀) 주의사항</strong>: 타 부서 지원(Support) 업무인 경우, 여기서 입력한 M/M 금액만큼 <strong>팀 비용에서
+                        공제(차감)</strong>되어 이익률이 개선됩니다. (보라색 <code>SUPPORT</code> 뱃지로 표시됨)</li>
+            </ul>
+        </li>
+        <li><strong>Save</strong>: 저장 버튼을 누르면 하단 리스트에 추가됩니다.</li>
+    </ol>
+
+    <h4>C. 탭 3: EXPENSE (비용) 💸</h4>
+    <ol>
+        <li><strong>인건비 (Labor M/M)</strong>: 우리 팀원이 해당 프로젝트(내부/외부)에 투입된 M/M을 입력합니다. 이는 팀의 <strong>원가(Cost)</strong>로
+            잡힙니다.</li>
+        <li><strong>외주비 (Outsource)</strong>: 외주 업체에 지급한 비용을 입력합니다.</li>
+        <li><strong>기타 경비 (Expense)</strong>: 출장비, 인쇄비 등 기타 수행 경비를 입력합니다.</li>
+    </ol>
+
+    <h3>3.2 전월 데이터 복사 (편의 기능) 📋</h3>
+    <p>매달 비슷한 인원 투입이 반복된다면, <strong>'📋 COPY LAST (전월 복사)'</strong> 버튼을 활용하세요.</p>
+    <ul>
+        <li>지난달에 입력한 M/M 투입 내역 등을 그대로 불러와서, 이번 달 날짜로 저장해줍니다.</li>
+        <li>복사 후 달라진 부분만 살짝 수정하면 입력 시간을 획기적으로 줄일 수 있습니다.</li>
+    </ul>
+
+    <h2>⚠️ 4. 자주 묻는 질문 (FAQ)</h2>
+
+    <div class="faq-q">Q1. 다른 팀 데이터가 수정이 안 돼요!</div>
+    <div class="faq-a">A: 정상입니다. 팀장은 오직 <strong>본인 팀</strong>의 데이터만 수정할 수 있습니다. 타 팀 데이터는 참고용으로 조회만 가능하며, 입력창이 회색으로 잠기고
+        삭제 버튼이 보이지 않습니다.</div>
+
+    <div class="faq-q">Q2. 데이터를 입력했는데 리스트에 안 보여요.</div>
+    <div class="faq-a">A1: 상단의 <strong>선택된 월(Month)</strong>이 올바른지 확인하세요. 1월에 입력하고 2월을 보고 계실 수 있습니다.<br>
+        A2: 리스트는 기본적으로 '선택된 프로젝트'의 내역만 보여줍니다. 프로젝트 선택을 풀거나 '...'으로 두면 전체 내역이 보일 수 있습니다.</div>
+
+    <div class="faq-q">Q3. 마감(Closed)되었다고 입력이 안 돼요.</div>
+    <div class="faq-a">A: 부서장이 해당 월의 실적 집계를 끝내고 마감 처리를 한 상태입니다. 수정이 꼭 필요하다면 부서장에게 "마감 해제"를 요청하세요.</div>
+
+    <hr>
+    <p style="text-align: center; color: #888; margin-top: 50px;">
+        <strong>시스템 관련 문의</strong>: 부서 내 관리자(Admin)에게 문의주시기 바랍니다.
+    </p>
+
+</body>
+
+</html>
