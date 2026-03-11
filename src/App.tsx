@@ -24,19 +24,19 @@ const PortRedirect = () => {
   const port = window.location.port;
 
   if (port === '5174') return <DashboardHomePageV3 />;
-  if (port === '5175') return <DashboardHomePageV2 />;
+  if (port === '5173') return <DashboardHomePage />; // V1
 
-  // Default (5173) -> V1 (Stable)
-  return <DashboardHomePage />;
+  // Default (5175 or Render/Production) -> V2 (Latest Stable)
+  return <DashboardHomePageV2 />;
 };
 
 const PortInputRedirect = () => {
   const port = window.location.port;
   if (port === '5174') return <InputDashboardPageV3 />;
-  if (port === '5175') return <InputDashboardPageV2 />;
+  if (port === '5173') return <InputDashboardPage />; // V1
 
-  // Default (5173) -> V1 (Stable)
-  return <InputDashboardPage />;
+  // Default (5175 or Render/Production) -> V2 (Latest Stable)
+  return <InputDashboardPageV2 />;
 };
 
 
