@@ -1157,14 +1157,17 @@ export default function InputDashboardPage() {
                                                 const tid = normalizeTeamId(teamId);
                                                 const isDivision2Common = leadId === 'TEAM_COMMON' || (p.ProjectName?.includes('철도2부') && p.ProjectName?.includes('공통'));
                                                 if (leadId === tid || isDivision2Common) return sum;
+
                                                 let factor = 1.0;
                                                 if (leadId === 'TEAM_OTHER' || leadId?.startsWith('DEPT_')) {
                                                     factor = rateSettings?.Surcharges?.find(s => s.Category === 'CROSS_DEPT')?.Factor || 1.3;
                                                 }
+
                                                 let rowRev = 0;
                                                 (['EXECUTIVE', 'DIRECTOR', 'MANAGER', 'DEPUTY', 'ASST', 'ASSOCIATE', 'JUNIOR'] as const).forEach(g => {
                                                     const base = rateSettings?.BaseRates?.find(r => r.Grade === g)?.BaseRateKRW || 0;
-                                                    const mm = Number(row[g as keyof GridRow] || 0);
+                                                    const mmVal = row[g as keyof GridRow];
+                                                    const mm = (typeof mmVal === 'string') ? (parseFloat(mmVal.replace(/,/g, '')) || 0) : (Number(mmVal) || 0);
                                                     rowRev += mm * base * factor;
                                                 });
                                                 return sum + rowRev;
@@ -1175,7 +1178,8 @@ export default function InputDashboardPage() {
                                                 let rowCost = 0;
                                                 (['EXECUTIVE', 'DIRECTOR', 'MANAGER', 'DEPUTY', 'ASST', 'ASSOCIATE', 'JUNIOR'] as const).forEach(g => {
                                                     const base = rateSettings?.BaseRates?.find(r => r.Grade === g)?.BaseRateKRW || 0;
-                                                    const mm = Number(row[g as keyof GridRow] || 0);
+                                                    const mmVal = row[g as keyof GridRow];
+                                                    const mm = (typeof mmVal === 'string') ? (parseFloat(mmVal.replace(/,/g, '')) || 0) : (Number(mmVal) || 0);
                                                     rowCost += mm * base;
                                                 });
                                                 return sum + rowCost;
@@ -1213,7 +1217,7 @@ export default function InputDashboardPage() {
                                                         </div>
                                                         <div className="mt-4 text-right">
                                                             <p className="text-2xl font-black text-indigo-600">
-                                                                ₩{Math.round(earnedSupportRevenue / 1000000).toLocaleString()}M
+                                                                ₩{Math.round((earnedSupportRevenue || 0) / 1000000).toLocaleString()}M
                                                             </p>
                                                         </div>
                                                     </div>
@@ -1227,10 +1231,10 @@ export default function InputDashboardPage() {
                                                         </div>
                                                         <div className="mt-4 text-right">
                                                             <p className="text-2xl font-black text-rose-700">
-                                                                ₩{Math.round(payrollCost / 1000000).toLocaleString()}M
+                                                                ₩{Math.round((payrollCost || 0) / 1000000).toLocaleString()}M
                                                             </p>
                                                             <p className="text-[10px] font-bold text-rose-600 mt-1">
-                                                                {gridData.reduce((sum, row) => sum + row.totalMM, 0).toFixed(2)} M/M
+                                                                {gridData.reduce((sum, row) => sum + (Number(row.totalMM) || 0), 0).toFixed(2)} M/M
                                                             </p>
                                                         </div>
                                                     </div>
@@ -1244,7 +1248,7 @@ export default function InputDashboardPage() {
                                                         </div>
                                                         <div className="mt-4 text-right">
                                                             <p className="text-2xl font-black text-amber-700">
-                                                                ₩{Math.round(inboundSupportCost / 1000000).toLocaleString()}M
+                                                                ₩{Math.round((inboundSupportCost || 0) / 1000000).toLocaleString()}M
                                                             </p>
                                                         </div>
                                                     </div>
@@ -1252,16 +1256,16 @@ export default function InputDashboardPage() {
                                                     {/* 4. Total Resource Profit Card */}
                                                     <div className={cn(
                                                         "rounded-2xl p-6 border flex flex-col justify-between shadow-sm hover:shadow-md transition-all",
-                                                        resourceProfit >= 0 ? "bg-[#ECFDF5] border-emerald-100" : "bg-rose-50 border-rose-100"
+                                                        (resourceProfit || 0) >= 0 ? "bg-[#ECFDF5] border-emerald-100" : "bg-rose-50 border-rose-100"
                                                     )}>
                                                         <div>
-                                                            <p className={cn("text-[10px] font-black uppercase tracking-widest mb-1", resourceProfit >= 0 ? "text-emerald-500" : "text-rose-500")}>Operating Results</p>
-                                                            <h4 className={cn("text-xs font-black mb-4 truncate", resourceProfit >= 0 ? "text-emerald-600" : "text-rose-600")}>RESOURCE PROFIT</h4>
-                                                            <p className={cn("text-[10px] font-bold leading-tight", resourceProfit >= 0 ? "text-emerald-400/70" : "text-rose-400/70")}>리소스 실익<br />(수익 - 전체지출)</p>
+                                                            <p className={cn("text-[10px] font-black uppercase tracking-widest mb-1", (resourceProfit || 0) >= 0 ? "text-emerald-500" : "text-rose-500")}>Operating Results</p>
+                                                            <h4 className={cn("text-xs font-black mb-4 truncate", (resourceProfit || 0) >= 0 ? "text-emerald-600" : "text-rose-600")}>RESOURCE PROFIT</h4>
+                                                            <p className={cn("text-[10px] font-bold leading-tight", (resourceProfit || 0) >= 0 ? "text-emerald-400/70" : "text-rose-400/70")}>리소스 실익<br />(수익 - 전체지출)</p>
                                                         </div>
                                                         <div className="mt-4 text-right">
-                                                            <p className={cn("text-2xl font-black", resourceProfit >= 0 ? "text-emerald-700" : "text-rose-700")}>
-                                                                ₩{Math.round(resourceProfit / 1000000).toLocaleString()}M
+                                                            <p className={cn("text-2xl font-black", (resourceProfit || 0) >= 0 ? "text-emerald-700" : "text-rose-700")}>
+                                                                ₩{Math.round((resourceProfit || 0) / 1000000).toLocaleString()}M
                                                             </p>
                                                         </div>
                                                     </div>
