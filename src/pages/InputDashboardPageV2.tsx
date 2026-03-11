@@ -712,7 +712,7 @@ export default function InputDashboardPage() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 md:mb-8 gap-4 md:gap-0">
                 <div>
                     <h2 className="text-xl md:text-3xl font-black tracking-tighter text-[#004442] border-l-[6px] md:border-l-[8px] border-[#004442] pl-4 md:pl-6 leading-none">
-                        📝 {t.titleInputForm}
+                        📝 {t.titleInputForm} <span className="text-sm bg-emerald-100 text-emerald-600 px-2 py-1 rounded ml-2">V2 (NEW)</span>
                     </h2>
                     <p className="text-[10px] md:text-xs text-slate-400 mt-1 md:mt-2 font-black uppercase tracking-[0.2em] pl-4 md:pl-6 italic">{currentTeam.TeamName.split('(')[0]} Management Node</p>
                 </div>
