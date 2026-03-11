@@ -127,11 +127,6 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
                             ...m,
                             TeamID: normalizeTeamId(m.TeamID)
                         }));
-                        const normalizedArCollections = (data.arCollections || []).map((c: any) => ({
-                            ...c,
-                            // If there were any TeamID in collections, normalize here. 
-                            // Usually linked via ProjectID, but good for future-proofing.
-                        }));
                         const normalizedCostExpenses = (data.costExpenses || []).map((e: any) => ({
                             ...e,
                             TeamID: normalizeTeamId(e.TeamID)
@@ -143,6 +138,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
                             teams,
                             projects: normalizedProjects,
                             mmAllocations: normalizedMmAllocations,
+                            arCollections: data.arCollections || [],
                             costExpenses: normalizedCostExpenses,
                             users: data.users || []
                         }));
