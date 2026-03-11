@@ -139,7 +139,9 @@ export default function DashboardHomePageV2() {
         grades.forEach(g => {
             const baseRate = rateSettings?.BaseRates?.find(r => r.Grade === g.key)?.BaseRateKRW || 0;
             const mmValue = Number(m[g.field] || 0);
-            total += mmValue * baseRate * factor;
+            if (!isNaN(mmValue)) {
+                total += mmValue * baseRate * factor;
+            }
         });
 
         return total;
@@ -514,10 +516,13 @@ export default function DashboardHomePageV2() {
                 {/* Left Side: Title & Period Selector */}
                 <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-6 w-full lg:w-auto">
                     <div>
-                        <h1 className="text-xl md:text-2xl font-black tracking-tighter text-[#004442] border-l-[6px] md:border-l-[8px] border-[#004442] pl-3 md:pl-4 leading-none">
-                            {t.navDashboard}
-                        </h1>
-                        <p className="text-[10px] text-slate-400 mt-1 font-black uppercase tracking-[0.2em] pl-3 md:pl-4">Railway Division 2 Performance Suite</p>
+                        <div className="flex items-center gap-3">
+                            <h1 className="text-xl md:text-2xl font-black tracking-tighter text-[#004442] border-l-[6px] md:border-l-[8px] border-[#004442] pl-3 md:pl-4 leading-none">
+                                {t.navDashboard}
+                            </h1>
+                            <span className="bg-emerald-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full animate-pulse">V2 (NEW)</span>
+                        </div>
+                        <p className="text-[10px] text-slate-400 mt-1 font-black uppercase tracking-[0.2em] pl-3 md:pl-4">Railway Division 2 | V2.0.1 (Released)</p>
                     </div>
 
                     {/* Period Selector */}
