@@ -152,6 +152,7 @@ const initStorage = async () => {
 
     if (!cachedData.rateSettings) cachedData.rateSettings = { BaseRates: [], Surcharges: [] }; // Critical safety check
     console.log(`🔑 Current System Password: "${cachedData.settings.password}" (Global: "${cachedData.globalPassword}")`);
+    console.log("🚀 Server Initialization Complete. Storage mode check finished.");
 };
 
 const getData = () => {
@@ -239,6 +240,23 @@ app.post('/api/verify-password', (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Failed to verify password' });
+    }
+});
+
+// Debug Storage Mode - Moved up for priority
+app.get('/api/debug-storage', (req, res) => {
+    console.log("🔍 Received request for /api/debug-storage");
+    try {
+        res.json({
+            mode: googleAdapter ? 'GOOGLE DRIVE' : 'LOCAL FILE',
+            sheetId: process.env.GOOGLE_SHEET_ID || 'not set',
+            hasCredentials: !!(process.env.GOOGLE_SERVICE_ACCOUNT_JSON || fs.existsSync(CREDENTIALS_FILE)),
+            serverTime: new Date().toISOString(),
+            status: 'Server is running'
+        });
+    } catch (err) {
+        console.error("❌ Debug endpoint failed:", err);
+        res.status(500).json({ error: err.message });
     }
 });
 
