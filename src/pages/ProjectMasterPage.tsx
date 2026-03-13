@@ -316,7 +316,7 @@ export default function ProjectMasterPage() {
                                         <td className="px-6 py-5 font-black text-slate-400 text-xs">{p.ProjectID}</td>
                                         <td className="px-6 py-5 font-bold text-slate-800 group-hover:text-[#004442] transition-colors">{p.ProjectName}</td>
                                         <td className="px-6 py-5 font-medium text-slate-600">{p.Client}</td>
-                                        <td className="px-6 py-5 text-right font-black text-[#004442] text-base">₩{p.ContractAmountKRW.toLocaleString()}</td>
+                                        <td className="px-6 py-5 text-right font-black text-[#004442] text-base whitespace-nowrap">₩{Math.round(p.ContractAmountKRW).toLocaleString()}</td>
                                         <td className="px-6 py-5 font-bold text-slate-500">{teams.find(t => t.TeamID === p.LeadSalesTeamID)?.TeamName.split('(')[0]}</td>
                                         <td className="px-6 py-5 text-center whitespace-nowrap">
                                             <span className={cn(

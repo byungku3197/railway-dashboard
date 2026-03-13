@@ -1043,18 +1043,18 @@ export default function DashboardHomePageV2() {
                                                 return (
                                                     <tr key={idx} className="border-b-2 border-slate-50 hover:bg-slate-50/80 transition-colors group">
                                                         <td className="px-2 py-6 text-center font-black text-slate-700 text-lg">{m.name}</td>
-                                                        <td className="px-4 py-6 text-right font-black text-[#004442] text-xl border-r-2 border-slate-100">₩{m.monthlyCollection.toLocaleString()}</td>
-                                                        <td className="px-4 py-6 text-right font-bold text-slate-700 bg-rose-50/10 text-lg">₩{m.ownLabor.toLocaleString()}</td>
-                                                        <td className="px-4 py-6 text-right font-bold text-slate-700 border-l-2 border-slate-100 text-lg transition-colors">₩{m.outsource.toLocaleString()}</td>
-                                                        <td className="px-4 py-6 text-right font-bold text-slate-700 text-lg transition-colors">₩{m.other.toLocaleString()}</td>
+                                                        <td className="px-4 py-6 text-right font-black text-[#004442] text-xl border-r-2 border-slate-100">₩{Math.round(m.monthlyCollection).toLocaleString()}</td>
+                                                        <td className="px-4 py-6 text-right font-bold text-slate-700 bg-rose-50/10 text-lg">₩{Math.round(m.ownLabor).toLocaleString()}</td>
+                                                        <td className="px-4 py-6 text-right font-bold text-slate-700 border-l-2 border-slate-100 text-lg transition-colors">₩{Math.round(m.outsource).toLocaleString()}</td>
+                                                        <td className="px-4 py-6 text-right font-bold text-slate-700 text-lg transition-colors">₩{Math.round(m.other).toLocaleString()}</td>
                                                         <td className="px-4 py-6 text-right bg-slate-50 font-black text-rose-600 border-l-2 border-slate-100 text-xl transition-colors">
-                                                            ₩{totalExpense.toLocaleString()}
+                                                            ₩{Math.round(totalExpense).toLocaleString()}
                                                         </td>
                                                         <td className={cn(
                                                             "px-4 py-6 text-right font-black border-l-2 border-slate-100 text-2xl",
                                                             profit >= 0 ? "text-emerald-700" : "text-rose-700"
                                                         )}>
-                                                            ₩{profit.toLocaleString()}
+                                                            ₩{Math.round(profit).toLocaleString()}
                                                         </td>
                                                     </tr>
                                                 );

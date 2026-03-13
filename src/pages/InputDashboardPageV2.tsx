@@ -990,13 +990,13 @@ export default function InputDashboardPage() {
                                                         <tr key={item.id} className="hover:bg-slate-50/50">
                                                             <td className="p-3 font-medium text-slate-700">{item.projectName}</td>
                                                             <td className="p-3 text-right font-bold text-[#004442]">
-                                                                {item.amount.toLocaleString()}
+                                                                {Math.round(item.amount).toLocaleString()}
                                                             </td>
                                                             <td className="p-3 text-right text-slate-500">
-                                                                {item.vat.toLocaleString()}
+                                                                {Math.round(item.vat).toLocaleString()}
                                                             </td>
                                                             <td className="p-3 text-right font-bold text-slate-700">
-                                                                {item.gross.toLocaleString()}
+                                                                {Math.round(item.gross).toLocaleString()}
                                                             </td>
                                                             <td className="p-3 text-slate-500 truncate max-w-[200px]">
                                                                 {item.note}
