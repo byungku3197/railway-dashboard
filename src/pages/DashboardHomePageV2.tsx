@@ -535,7 +535,6 @@ export default function DashboardHomePageV2() {
                             <h1 className="text-xl md:text-2xl font-black tracking-tighter text-[#004442] border-l-[6px] md:border-l-[8px] border-[#004442] pl-3 md:pl-4 leading-none">
                                 {t.navDashboard}
                             </h1>
-                            <span className="bg-emerald-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full animate-pulse">V2 (NEW)</span>
                         </div>
                         <p className="text-[10px] text-slate-400 mt-1 font-black uppercase tracking-[0.2em] pl-3 md:pl-4">Railway Division 2 | V2.0.1 (Released)</p>
                     </div>
