@@ -110,19 +110,22 @@ export default function InputDashboardPage() {
     // usage of JSON.stringify to deep compare is expensive, so we use a simpler heuristic or just check if it's empty.
     // BETTER: Use a ref to track the last loaded key (Month + Team)
     const lastLoadedKey = useRef<string>('');
+    const [isEdited, setIsEdited] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
 
     useEffect(() => {
-        // 1. Get filtered list of active projects
+        // Get filtered list of active projects
         const activeProjects = projects.filter(p => p.Status === 'ACTIVE');
         const currentKey = `${monthKey}-${teamId}`;
 
-        // Heuristic: If we already loaded data for this key, AND the number of projects hasn't changed,
-        // AND gridData is not empty, then we skip re-initialization to preserve local edits.
-        if (lastLoadedKey.current === currentKey &&
-            gridData.length === activeProjects.length &&
-            gridData.length > 0) {
+        // STRICT GUARD: If we already loaded data for this specific Month-Team combo,
+        // we NEVER re-initialize unless the user explicitly forces it (or changes month/team).
+        // This prevents polling from context (DataProvider) from wiping local edits.
+        if (lastLoadedKey.current === currentKey && gridData.length > 0) {
             return;
         }
+
+        if (activeProjects.length === 0) return;
 
         // 2. Get existing allocations for this month/team (normalized)
         const tid = normalizeTeamId(teamId);
@@ -130,19 +133,20 @@ export default function InputDashboardPage() {
 
         // 2. Map all projects to rows (De-duplicate projects by ID)
         const uniqueProjectsMap = new Map();
-        projects.filter(p => p.Status === 'ACTIVE').forEach(p => {
+        activeProjects.forEach(p => {
             if (!uniqueProjectsMap.has(p.ProjectID)) {
                 uniqueProjectsMap.set(p.ProjectID, p);
             }
         });
 
         const rows: GridRow[] = Array.from(uniqueProjectsMap.values())
-            .sort((a, b) => a.ProjectName.localeCompare(b.ProjectName))
+            .sort((a, b) => (a as any).ProjectName.localeCompare((b as any).ProjectName))
             .map(p => {
-                const existing = existingAllocations.find(m => m.ProjectID === p.ProjectID);
+                const proj = p as any;
+                const existing = existingAllocations.find(m => m.ProjectID === proj.ProjectID);
                 const row: GridRow = {
-                    projectId: p.ProjectID,
-                    projectName: p.ProjectName,
+                    projectId: proj.ProjectID,
+                    projectName: proj.ProjectName,
                     EXECUTIVE: existing?.MM_EXECUTIVE || 0,
                     DIRECTOR: existing?.MM_DIRECTOR || 0,
                     MANAGER: existing?.MM_MANAGER || 0,
@@ -167,11 +171,13 @@ export default function InputDashboardPage() {
 
         setGridData(rows);
         lastLoadedKey.current = currentKey;
+        setIsEdited(false);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [projects, mmAllocations, monthKey, teamId]);
 
 
     const handleGridChange = (rowIndex: number, field: string, value: string) => {
+        setIsEdited(true);
         setGridData(prev => {
             const newData = [...prev];
             // Create a new object for the row to avoid mutation
@@ -200,6 +206,7 @@ export default function InputDashboardPage() {
         if (rows.length === 0) return;
 
         // Use functional state update to ensure latest state and avoid mutation
+        setIsEdited(true);
         setGridData(prev => {
             // Deep copy of the array to allow mutation of rows in the copy
             const newData = prev.map(row => ({ ...row }));
@@ -254,6 +261,7 @@ export default function InputDashboardPage() {
         if (isClosed) return toast.error(t.msgClosedMonth);
         if (window.confirm("인력 투입 계획을 저장하시겠습니까? (기존 데이터는 덮어씌워집니다)")) {
             try {
+                setIsSaving(true);
                 const payloads: MmAllocation[] = [];
                 const idsToDelete: string[] = [];
 
@@ -301,9 +309,12 @@ export default function InputDashboardPage() {
                 // Force re-sync by resetting lastLoadedKey so the useEffect can run again if context is the same
                 lastLoadedKey.current = '';
                 toast.success(`${payloads.length}건의 프로젝트 인력 투입이 저장되었습니다.`);
+                setIsEdited(false);
             } catch (e) {
                 console.error(e);
                 toast.error("저장 중 오류가 발생했습니다.");
+            } finally {
+                setIsSaving(false);
             }
         }
     };
@@ -1036,13 +1047,25 @@ export default function InputDashboardPage() {
                                         프로젝트별 직급별 투입 M/M를 관리합니다. 엑셀에서 복사하여 붙여넣을 수 있습니다.
                                     </div>
                                 </div>
-                                <div className="flex gap-2">
+                                <div className="flex gap-2 items-center">
+                                    {isEdited && !isSaving && (
+                                        <span className="text-[10px] font-black text-amber-600 bg-amber-50 px-2 py-1 rounded-lg border border-amber-100 animate-pulse uppercase tracking-tight">
+                                            변경사항 있음 (Unsaved Changes)
+                                        </span>
+                                    )}
                                     <Button
                                         onClick={handleSaveGrid}
-                                        disabled={!canEdit}
-                                        className="bg-[#004442] hover:bg-[#003332] text-white font-bold shadow-md"
+                                        disabled={!canEdit || isSaving}
+                                        className={cn(
+                                            "bg-[#004442] hover:bg-[#003332] text-white font-bold shadow-md transition-all relative",
+                                            isEdited && !isSaving && "ring-2 ring-amber-400 ring-offset-2"
+                                        )}
                                     >
-                                        💾 전체 저장 (Save All)
+                                        {isSaving ? (
+                                            <span className="flex items-center gap-2">
+                                                <span className="animate-spin">⏳</span> 저장 중...
+                                            </span>
+                                        ) : "💾 전체 저장 (Save All)"}
                                     </Button>
                                 </div>
                             </CardHeader>
