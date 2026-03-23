@@ -7,6 +7,7 @@ export class GoogleSheetAdapter {
         this.sheetId = sheetId;
         this.credentials = credentials;
         this.doc = null;
+        this.sheetHashes = {}; // Cache to prevent unchanged sheets from syncing
 
         this.schema = {
             'teams': 'Teams',
@@ -54,6 +55,7 @@ export class GoogleSheetAdapter {
             let sheet = this.doc.sheetsByTitle[sheetTitle];
             if (!sheet) {
                 data[key] = key === 'settings' ? {} : [];
+                this.sheetHashes[sheetTitle] = JSON.stringify(data[key]);
                 continue;
             }
             let rows = [];
@@ -61,6 +63,7 @@ export class GoogleSheetAdapter {
                 rows = await sheet.getRows();
             } catch (e) {
                 data[key] = (key === 'settings') ? {} : [];
+                this.sheetHashes[sheetTitle] = JSON.stringify(data[key]);
                 continue;
             }
             if (key === 'settings') {
@@ -75,6 +78,7 @@ export class GoogleSheetAdapter {
                 const rawItems = rows.map(row => this._mapRowToObject(row));
                 data[key] = this._ensureIdsAndDeduplicate(key, rawItems);
             }
+            this.sheetHashes[sheetTitle] = JSON.stringify(data[key]);
         }
 
         for (const sheet of this.doc.sheetsByIndex) {
@@ -84,6 +88,7 @@ export class GoogleSheetAdapter {
                         const rows = await sheet.getRows();
                         const items = rows.map(row => this._mapRowToObject(row));
                         splitDataAccumulator[key].push(...items);
+                        // Safe to hash here before deduplication because we rewrite the grouped array on save
                     } catch (e) {}
                 }
             }
@@ -91,6 +96,17 @@ export class GoogleSheetAdapter {
 
         Object.entries(splitDataAccumulator).forEach(([key, items]) => {
             data[key] = this._ensureIdsAndDeduplicate(key, items);
+            // Re-group to match how saving works, and populate hashes for future diffing
+            const grouped = {};
+            ['TEAM_1', 'TEAM_2', 'TEAM_3', 'TEAM_4', 'TEAM_5'].forEach(tid => { grouped[tid] = []; });
+            data[key].forEach(item => {
+                let teamId = item[this.splitConfig[key].teamField] || 'OTHER';
+                if (!grouped[teamId]) grouped[teamId] = [];
+                grouped[teamId].push(item);
+            });
+            for (const [teamId, r] of Object.entries(grouped)) {
+                this.sheetHashes[`${this.splitConfig[key].prefix}${teamId}`] = JSON.stringify(r);
+            }
         });
 
         data.rateSettings = {
@@ -161,8 +177,6 @@ export class GoogleSheetAdapter {
     }
 
     async _saveToSheet(sheetTitle, items, isSettings = false) {
-        let sheet = this.doc.sheetsByTitle[sheetTitle];
-        if (!sheet) sheet = await this.doc.addSheet({ title: sheetTitle });
         let headers = [];
         let rows = [];
         if (isSettings) {
@@ -172,11 +186,23 @@ export class GoogleSheetAdapter {
             if (items.length > 0) headers = Object.keys(items[0]);
             rows = [...items];
         }
+
+        const currentHash = JSON.stringify(rows);
+        if (this.sheetHashes[sheetTitle] === currentHash) {
+            return; // Skip sync for unchanged sheets to prevent API limits and save time
+        }
+
+        let sheet = this.doc.sheetsByTitle[sheetTitle];
+        if (!sheet) sheet = await this.doc.addSheet({ title: sheetTitle });
+        
         await new Promise(r => setTimeout(r, 1200));
         await sheet.clear();
         if (headers.length > 0) {
             await sheet.setHeaderRow(headers);
             if (rows.length > 0) await sheet.addRows(rows);
         }
+        
+        this.sheetHashes[sheetTitle] = currentHash;
+        console.log(`✅ Synced sheet: ${sheetTitle}`);
     }
 }
