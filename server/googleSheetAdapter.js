@@ -86,7 +86,13 @@ export class GoogleSheetAdapter {
                 if (sheet.title === this.schema[key] || sheet.title.startsWith(config.prefix)) {
                     try {
                         const rows = await sheet.getRows();
-                        const items = rows.map(row => this._mapRowToObject(row));
+                        const items = rows.map(row => {
+                            const obj = this._mapRowToObject(row);
+                            if (!obj[config.teamField]) {
+                                obj[config.teamField] = sheet.title.replace(config.prefix, '');
+                            }
+                            return obj;
+                        });
                         splitDataAccumulator[key].push(...items);
                         // Safe to hash here before deduplication because we rewrite the grouped array on save
                     } catch (e) {}
