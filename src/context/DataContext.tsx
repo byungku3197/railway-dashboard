@@ -131,6 +131,11 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
                             ...e,
                             TeamID: normalizeTeamId(e.TeamID)
                         }));
+                        const normalizedMonthCloseControls = (data.monthCloseControls || []).map((c: any) => ({
+                            ...c,
+                            TeamID: normalizeTeamId(c.TeamID),
+                            IsClosed: c.IsClosed === true || String(c.IsClosed).toUpperCase() === 'TRUE'
+                        }));
 
                         setState(prev => ({
                             ...prev,
@@ -138,6 +143,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
                             teams,
                             projects: normalizedProjects,
                             mmAllocations: normalizedMmAllocations,
+                            monthCloseControls: normalizedMonthCloseControls,
                             arCollections: data.arCollections || [],
                             costExpenses: normalizedCostExpenses,
                             users: data.users || []

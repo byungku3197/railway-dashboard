@@ -1,0 +1,8 @@
+node_modules/
+dist/
+deploy_temp/
+.env
+.env.*
+server/credentials.json
+server/credentials.json.bak
+*.log
