@@ -280,7 +280,17 @@ app.post('/api/update-password', async (req, res) => {
     }
 });
 
-// Get Data
+// Force Refresh from Google Sheets
+app.get('/api/refresh', async (req, res) => {
+    try {
+        console.log("🔄 Manual Refresh Requested...");
+        await initStorage();
+        res.json({ success: true, message: 'Data reloaded from Google Sheets', projectCount: cachedData.projects?.length });
+    } catch (err) {
+        console.error("❌ Refresh Failed:", err);
+        res.status(500).json({ error: err.message });
+    }
+});
 app.get('/api/data', (req, res) => {
     try {
         const data = getData();
