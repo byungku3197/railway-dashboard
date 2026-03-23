@@ -183,7 +183,11 @@ export class GoogleSheetAdapter {
             headers = ['Key', 'Value'];
             rows = Object.entries(items || {}).map(([k, v]) => ({ Key: k, Value: v }));
         } else if (Array.isArray(items)) {
-            if (items.length > 0) headers = Object.keys(items[0]);
+            if (items.length > 0) {
+                const headerSet = new Set();
+                items.forEach(item => Object.keys(item).forEach(k => headerSet.add(k)));
+                headers = Array.from(headerSet);
+            }
             rows = [...items];
         }
 
