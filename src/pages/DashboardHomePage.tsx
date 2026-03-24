@@ -402,7 +402,15 @@ export default function DashboardHomePage() {
             return total;
         };
 
-        const list = projects.map(p => {
+        // Deduplicate projects to prevent UI duplication bugs
+        const uniqueProjectsMap = new Map();
+        projects.forEach(p => {
+            if (!uniqueProjectsMap.has(p.ProjectID)) {
+                uniqueProjectsMap.set(p.ProjectID, p);
+            }
+        });
+
+        const list = Array.from(uniqueProjectsMap.values()).map(p => {
             // Revenue for Projects: Should match Total Summary Logic (Net + VAT) for Sales Teams
             // But usually 'Revenue' is Net. However, User compares it to "Collection" which is Net + VAT.
             // So we will use Net + VAT for Revenue here to align with "Total Cumulative Collection".

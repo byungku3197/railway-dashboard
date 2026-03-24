@@ -362,7 +362,15 @@ export default function DashboardHomePageV2() {
     const collectionPct = annualGoal.CollectionGoal > 0 ? (currentCollectionSum / annualGoal.CollectionGoal) * 100 : 0;
 
     const projectData = useMemo(() => {
-        const list = projects.map(p => {
+        // Deduplicate projects to prevent UI duplication bugs
+        const uniqueProjectsMap = new Map();
+        projects.forEach(p => {
+            if (!uniqueProjectsMap.has(p.ProjectID)) {
+                uniqueProjectsMap.set(p.ProjectID, p);
+            }
+        });
+
+        const list = Array.from(uniqueProjectsMap.values()).map(p => {
             // Revenue for Projects: Should match Total Summary Logic (Net + VAT) for Sales Teams
             let collections = arCollections.filter(c => c.ProjectID === p.ProjectID && c.MonthKey >= startMonth && c.MonthKey <= endMonth).reduce((sum, c) => sum + Number(c.AmountKRW) + Number(c.TaxAmountKRW || 0), 0);
 
